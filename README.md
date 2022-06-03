@@ -3,6 +3,8 @@
 ### DESCRIPTION
 The application gets matches data from the official API, transforms data, and puts it in a Data Lake/Data Warehouse. Then we perform some Explanatory Data Analysis. The main goal is to deliver game knowledge to players through statistical elements and charts to help them get better in games.
 
+Some charts that I created based on the data: https://public.tableau.com/app/profile/khoa8102/viz/LOL_RANKED_GAME_VIZ/Dashboard2?publish=yes
+
 ### STEP TO RUN
 - Create your Riot Development (or Production, if you can) key. See: https://developer.riotgames.com/app-type
 - Create a Google service account and download the json file.
@@ -20,3 +22,6 @@ The application gets matches data from the official API, transforms data, and pu
 ### NEXT STEPS
 - Migrate the code to dags to run the code on Airflow
 - Batch load csv files from Google Cloud Storage to BigQuery for futher analysis and data visualizations
+
+## TECHNOLOGIES
+- Python, Docker, Google Cloud Platform (Storage, BigQuery), Tableau, Airflow
