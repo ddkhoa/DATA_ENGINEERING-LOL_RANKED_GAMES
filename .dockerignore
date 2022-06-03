@@ -1,0 +1,10 @@
+/data
+/ingestion/test.py
+/ingestion/__pycache__
+/dags
+/lol_de_env
+/utils
+.dockerignore
+.gitignore
+Dockerfile
+todo

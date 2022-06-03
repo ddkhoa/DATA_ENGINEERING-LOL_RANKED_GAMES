@@ -1,0 +1,10 @@
+/cloud-auth
+/data
+/ingestion/test.py
+/ingestion/__pycache__
+/ingestion/common.py
+/dags
+/lol_de_env
+/utils
+todo
+.env
