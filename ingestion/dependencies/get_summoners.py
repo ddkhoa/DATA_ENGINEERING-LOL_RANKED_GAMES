@@ -5,7 +5,7 @@ import json
 import os
 import random
 
-from common import HOST, X_RIOT_TOKEN, SUMMONERS_SIZE, get_date_label, data_directory, write_csv
+from dependencies.common import HOST, X_RIOT_TOKEN, SUMMONERS_SIZE, CLOUD_STORAGE_DATA_TEMP, get_date_label, data_directory, bucket, write_csv
 
 divisions = ["I", "II", "III", "IV"]
 tiers = ["DIAMOND", "PLATINUM", "GOLD", "SILVER", "BRONZE", "IRON"]
@@ -38,16 +38,16 @@ def get_summoners_riot_api(queue, tier, division, page=1):
     return data_json
 
 
-def get_summoners(date: datetime):
+def get_summoners(date: datetime=None):
 
     if not date:
         date = datetime.today() - timedelta(days=1)
-        
+
     if not os.path.isdir(data_directory):
         os.mkdir(data_directory)
 
     date_label = get_date_label(date)
-    summoners_csv = os.path.join(data_directory, "summoners_{date_label}.csv".format(date_label=date_label))
+
 
     summoners_list = []
 
@@ -61,5 +61,15 @@ def get_summoners(date: datetime):
                 random.shuffle(summoners_data)
                 summoners_list.extend(summoners_data[:SUMMONERS_SIZE])
 
-    write_csv(summoners_list, summoners_csv, 'w', summoner_fieldnames)
+    summoners_csv_local = os.path.join(data_directory, "summoners_{date_label}.csv".format(date_label=date_label))
+    write_csv(summoners_list, summoners_csv_local, 'w', summoner_fieldnames)
+
+    summoners_csv_gcs = "{}/summoners_{}.csv".format(CLOUD_STORAGE_DATA_TEMP, date_label)
+    summoners_blob = bucket.blob(summoners_csv_gcs)
+
+    summoners_blob.upload_from_filename(summoners_csv_local)
+
+    return len(summoners_list)
+
+
                

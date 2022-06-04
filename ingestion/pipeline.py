@@ -2,11 +2,11 @@ from datetime import datetime, timedelta
 import time
 import argparse
 
-from prepare import prepare
-from get_summoners import get_summoners
-from get_summoners_puuid import get_summoners_puuid
-from get_matches_id import get_matches_id
-from get_match_data import get_match_data
+from dependencies.prepare import prepare
+from dependencies.get_summoners import get_summoners
+from dependencies.get_summoners_puuid import get_summoners_puuid
+from dependencies.get_matches_id import get_matches_id
+from dependencies.get_match_data import get_match_data
 
 
 def parse_string(str):

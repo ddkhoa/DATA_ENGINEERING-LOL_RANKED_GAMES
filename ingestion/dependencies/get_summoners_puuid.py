@@ -3,7 +3,7 @@ from time import sleep
 import os
 
 from google.cloud import storage
-from common import HOST, X_RIOT_TOKEN, get_date_label, data_directory, CLOUD_STORAGE_SIDE_INPUT_DIR, bucket, storage_client, read_csv, write_csv
+from dependencies.common import HOST, X_RIOT_TOKEN, get_date_label, data_directory, CLOUD_STORAGE_SIDE_INPUT_DIR, CLOUD_STORAGE_DATA_TEMP, bucket, storage_client, read_csv, write_csv
 import requests
 import json
 import sys
@@ -39,8 +39,13 @@ def get_summoners_puuid(date: datetime=None):
     date_label = get_date_label(date)
 
     # input: summoners csv file
-    summoners_csv = os.path.join(data_directory, "summoners_{date_label}.csv".format(date_label=date_label))
-    summoners_list = read_csv(summoners_csv)
+    summoners_csv_gcs = "{}/summoners_{}.csv".format(CLOUD_STORAGE_DATA_TEMP, date_label)
+    summoners_blob = bucket.blob(summoners_csv_gcs)
+
+    summoners_csv_local = os.path.join(data_directory, "summoners_{date_label}.csv".format(date_label=date_label))
+    summoners_blob.download_to_filename(summoners_csv_local)
+
+    summoners_list = read_csv(summoners_csv_local)
 
     # side input: puuid cache
     puuid_cache = {}
@@ -86,7 +91,9 @@ def get_summoners_puuid(date: datetime=None):
     summoners_list = [item for item in summoners_list if item['puuid']]
     summoner_puuid_fieldnames = ["leagueId", "queueType", "tier",  "rank",  "summonerId", "summonerName",
                        "leaguePoints", "wins", "losses", "veteran", "inactive", "freshBlood", "hotStreak", "miniSeries", "puuid"]
-    write_csv(summoners_list, summoners_csv, 'w', summoner_puuid_fieldnames)
+
+    write_csv(summoners_list, summoners_csv_local, 'w', summoner_puuid_fieldnames)
+    summoners_blob.upload_from_filename(summoners_csv_local)
 
     # ensure_ascii = False because some summoners name have accent
     puuid_cache_serialized = json.dumps(puuid_cache, indent = 4, ensure_ascii=False)

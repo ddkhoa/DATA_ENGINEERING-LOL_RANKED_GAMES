@@ -1,9 +1,9 @@
-/cloud-auth
-/data
-/ingestion/test.py
-/ingestion/__pycache__
-/ingestion/common.py
-/dags
+ingestion/__pycache__
+ingestion/cloud-auth
+ingestion/data
+ingestion/dependencies/__pycache__
+ingestion/dependencies/common.py
+ingestion/dependencies/test.py
 /lol_de_env
 /utils
 todo

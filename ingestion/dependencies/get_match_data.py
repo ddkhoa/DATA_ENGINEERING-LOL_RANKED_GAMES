@@ -5,7 +5,7 @@ import requests
 import json
 from time import sleep
 
-from common import HOST_EU, X_RIOT_TOKEN, get_date_label, data_directory, CLOUD_STORAGE_SIDE_INPUT_DIR, CLOUD_STORAGE_DATA_DIR, bucket, read_csv, write_csv
+from dependencies.common import HOST_EU, X_RIOT_TOKEN, get_date_label, data_directory, CLOUD_STORAGE_DATA_TEMP, CLOUD_STORAGE_SIDE_INPUT_DIR, CLOUD_STORAGE_DATA_DIR, bucket, read_csv, write_csv, load_csv_to_bigquery, CHAMPIONS_TABLE, MATCHES_TABLE
 
 def get_match_data_by_id(id):
     endpoint = "/lol/match/v5/matches/{id}/".format(
@@ -83,6 +83,15 @@ def filter_attributes_match_obj(match_obj, tier, champs_lookup):
             break
             
         pick_champ['championName'] = champs_lookup[str(pick_champ['championId'])]
+
+        opponent = filter(lambda p: p['teamPosition'] == pick_champ['teamPosition'] and p['teamId'] != pick_champ['teamId'],
+                                     match_obj['info']['participants'])
+        opponent = list(opponent)
+        if len(opponent) > 0:
+            pick_champ['opponent'] = champs_lookup[str(opponent[0]['championId'])]
+        else:
+            pick_champ['opponent'] = None
+        
         champ_list.append(pick_champ)
 
 
@@ -114,13 +123,14 @@ def get_match_data(date: datetime=None):
 
     date_label = get_date_label(date)
 
-    # output
-    matches_data_csv = os.path.join(data_directory, "matches_data_{date_label}.csv".format(date_label=date_label))
-    champs_data_csv = os.path.join(data_directory, "champs_data_{date_label}.csv".format(date_label=date_label))
-
     # read input
-    matches_id_csv = os.path.join(data_directory, "matches_id_{date_label}.csv".format(date_label=date_label))
-    match_id_list = read_csv(matches_id_csv)
+    matches_id_csv_gcs = "{}/matches_id_{}.csv".format(CLOUD_STORAGE_DATA_TEMP, date_label)
+    matches_id_blob = bucket.blob(matches_id_csv_gcs)
+
+    matches_id_csv_local = os.path.join(data_directory, "matches_id_{date_label}.csv".format(date_label=date_label))
+    matches_id_blob.download_to_filename(matches_id_csv_local)
+    
+    match_id_list = read_csv(matches_id_csv_local)
 
     # side input
     champs_lookup_path =  "{}/champs_lookup.json".format(CLOUD_STORAGE_SIDE_INPUT_DIR)
@@ -165,6 +175,10 @@ def get_match_data(date: datetime=None):
             print(sys.exc_info()[0], sys.exc_info()[1])
             continue
 
+    # output
+    matches_data_csv = os.path.join(data_directory, "matches_data_{date_label}.csv".format(date_label=date_label))
+    champs_data_csv = os.path.join(data_directory, "champs_data_{date_label}.csv".format(date_label=date_label))
+
     # writeto csv
     matches_fieldnames = [
         "matchId","tier","gameStartTimestamp","gameEndTimestamp","gameStartTime","gameEndTime","gameDuration","mapId","gameVersion",
@@ -174,8 +188,8 @@ def get_match_data(date: datetime=None):
     ]
     write_csv(matches, matches_data_csv, 'w', matches_fieldnames)
 
-    champions_fieldnames = ["matchId","gameStartTime","tier","pick","ban","assists","deaths","kills",
-                                "championId","teamPosition","teamId","win","championName","turn"]
+    champions_fieldnames = ["matchId","gameStartTime","tier","pick","ban","win","assists","deaths","kills",
+                                "championId","championName","opponent","teamPosition","teamId","turn"]
     write_csv(champs, champs_data_csv, 'w', champions_fieldnames)
 
     # upload to gcs
@@ -183,3 +197,7 @@ def get_match_data(date: datetime=None):
     blob_matches.upload_from_filename(matches_data_csv)
     blob_champs = bucket.blob("{}/champs_data_{}.csv".format(CLOUD_STORAGE_DATA_DIR, date_label))
     blob_champs.upload_from_filename(champs_data_csv)
+
+    # batch load csv to bigquery (free!)
+    load_csv_to_bigquery(file_path=champs_data_csv, table_id=CHAMPIONS_TABLE)
+    load_csv_to_bigquery(file_path=matches_data_csv, table_id=MATCHES_TABLE)

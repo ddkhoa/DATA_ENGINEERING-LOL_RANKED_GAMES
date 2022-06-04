@@ -1,10 +1,11 @@
-/data
-/ingestion/test.py
-/ingestion/__pycache__
-/dags
+ingestion/__pycache__
+ingestion/data
+ingestion/dependencies/__pycache__
+ingestion/dependencies/test.py
 /lol_de_env
 /utils
 .dockerignore
 .gitignore
+README.md
 Dockerfile
 todo

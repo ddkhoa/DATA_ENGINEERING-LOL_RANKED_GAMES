@@ -1,7 +1,7 @@
 # create champs lookup and put on gcs
 
 import requests, json
-from common import CLOUD_STORAGE_SIDE_INPUT_DIR, bucket
+from dependencies.common import CLOUD_STORAGE_SIDE_INPUT_DIR, bucket
 
 def prepare():
     champs_data_url="http://ddragon.leagueoflegends.com/cdn/12.10.1/data/en_US/champion.json"

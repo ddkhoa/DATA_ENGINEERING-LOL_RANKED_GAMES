@@ -2,7 +2,7 @@ from time import sleep
 import os
 from datetime import datetime, timedelta
 
-from common import HOST_EU, X_RIOT_TOKEN, get_date_label, data_directory, read_csv, write_csv
+from dependencies.common import HOST_EU, X_RIOT_TOKEN, get_date_label, data_directory, read_csv, write_csv, CLOUD_STORAGE_DATA_TEMP, bucket
 import requests
 import json
 import sys
@@ -48,11 +48,14 @@ def get_matches_id(date: datetime=None):
         date = datetime.today() - timedelta(days=1)
 
     date_label = get_date_label(date)
-    
-    summoners_csv = os.path.join(data_directory, "summoners_{date_label}.csv".format(date_label=date_label))
-    tier_matches_id_csv = os.path.join(data_directory, "matches_id_{date_label}.csv".format(date_label=date_label))
 
-    summoners_data = read_csv(summoners_csv)
+    summoners_csv_gcs = "{}/summoners_{}.csv".format(CLOUD_STORAGE_DATA_TEMP, date_label)
+    summoners_blob = bucket.blob(summoners_csv_gcs)
+
+    summoners_csv_local = os.path.join(data_directory, "summoners_{date_label}.csv".format(date_label=date_label))
+    summoners_blob.download_to_filename(summoners_csv_local)
+    
+    summoners_data = read_csv(summoners_csv_local)
 
     date_range = get_start_and_end_timestamp(date)
     start_date = date_range['start']
@@ -85,6 +88,12 @@ def get_matches_id(date: datetime=None):
             print(match_data)
 
     # print(tier_matches_list, matches_id_list)
-    write_csv(tier_matches_list, tier_matches_id_csv, 'w', keys=['tier', 'match_id'])
+    tier_matches_id_csv_local = os.path.join(data_directory, "matches_id_{date_label}.csv".format(date_label=date_label))
+    write_csv(tier_matches_list, tier_matches_id_csv_local, 'w', keys=['tier', 'match_id'])
+
+    tier_matches_id_csv_gcs = "{}/matches_id_{}.csv".format(CLOUD_STORAGE_DATA_TEMP, date_label)
+    tier_matches_id_blob = bucket.blob(tier_matches_id_csv_gcs)
+
+    tier_matches_id_blob.upload_from_filename(tier_matches_id_csv_local)
 
 
