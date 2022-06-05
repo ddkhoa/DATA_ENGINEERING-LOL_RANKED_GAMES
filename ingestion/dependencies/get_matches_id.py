@@ -42,10 +42,10 @@ def get_start_and_end_timestamp(date: datetime):
     }
     return result
 
-def get_matches_id(date: datetime=None):
+def get_matches_id(date: datetime=None, **kwargs):
 
     if not date:
-        date = datetime.today() - timedelta(days=1)
+        date = kwargs['execution_date']
 
     date_label = get_date_label(date)
 

@@ -116,10 +116,10 @@ def filter_attributes_match_obj(match_obj, tier, champs_lookup):
     }
     return result
 
-def get_match_data(date: datetime=None):
+def get_match_data(date: datetime=None, **kwargs):
 
     if not date:
-        date = datetime.today() - timedelta(days=1)
+        date = kwargs['execution_date']
 
     date_label = get_date_label(date)
 

@@ -10,9 +10,9 @@ dag = DAG('lol_de', description='Lol Ranked Games',
             start_date=datetime.today() - timedelta(days=1), catchup=False)
 
 prepare_operator = PythonOperator(task_id='prepare', python_callable=prepare.prepare, dag=dag)
-get_summoners_operator = PythonOperator(task_id='get_summoners', python_callable=get_summoners.get_summoners, dag=dag)
-get_summoners_puuid_operator = PythonOperator(task_id='get_summoners_puuid', python_callable=get_summoners_puuid.get_summoners_puuid, dag=dag)
-get_matches_id_operator = PythonOperator(task_id='get_matches_id', python_callable=get_matches_id.get_matches_id, dag=dag)
-get_match_data_operator = PythonOperator(task_id='get_match_data', python_callable=get_match_data.get_match_data, dag=dag)
+get_summoners_operator = PythonOperator(task_id='get_summoners', python_callable=get_summoners.get_summoners, dag=dag, provide_context=True)
+get_summoners_puuid_operator = PythonOperator(task_id='get_summoners_puuid', python_callable=get_summoners_puuid.get_summoners_puuid, dag=dag, provide_context=True)
+get_matches_id_operator = PythonOperator(task_id='get_matches_id', python_callable=get_matches_id.get_matches_id, dag=dag, provide_context=True)
+get_match_data_operator = PythonOperator(task_id='get_match_data', python_callable=get_match_data.get_match_data, dag=dag, provide_context=True)
 
 prepare_operator >> get_summoners_operator >> get_summoners_puuid_operator >> get_matches_id_operator >> get_match_data_operator

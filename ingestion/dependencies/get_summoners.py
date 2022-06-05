@@ -38,10 +38,10 @@ def get_summoners_riot_api(queue, tier, division, page=1):
     return data_json
 
 
-def get_summoners(date: datetime=None):
+def get_summoners(date: datetime=None, **kwagrs):
 
     if not date:
-        date = datetime.today() - timedelta(days=1)
+        date = kwagrs['execution_date']
 
     if not os.path.isdir(data_directory):
         os.mkdir(data_directory)

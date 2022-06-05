@@ -31,10 +31,10 @@ def get_summoner_by_name(summoner_name):
     data_json = json.loads(data_text)
     return data_json
 
-def get_summoners_puuid(date: datetime=None):
+def get_summoners_puuid(date: datetime=None, **kwargs):
 
     if not date:
-        date = datetime.today() - timedelta(days=1)
+        date = kwargs['execution_date']
 
     date_label = get_date_label(date)
 

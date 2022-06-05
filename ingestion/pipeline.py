@@ -16,7 +16,7 @@ def parse_string(str):
 
     return datetime(year, month, day)
 
-def run_pipeline(date_arg=None):
+def run_pipeline(date_arg):
 
     if date_arg:
         date = parse_string(date_arg)
@@ -53,7 +53,7 @@ def run_pipeline(date_arg=None):
     print('Get match data time:', end_all - end_get_matches_id, 'seconds')
     print('Execution time:', end_all - start_all, 'seconds')
 
-def run():
+def main():
 
     parser = argparse.ArgumentParser(description='Get LOL ranked games')
     parser.add_argument("--date", type=str, required=False)
@@ -64,4 +64,4 @@ def run():
     run_pipeline(date_arg)
 
 if __name__ == "__main__":
-    run()
+    main()
