@@ -8,6 +8,12 @@ from time import sleep
 from dependencies.common import HOST_EU, X_RIOT_TOKEN, get_date_label, data_directory, CLOUD_STORAGE_DATA_TEMP, CLOUD_STORAGE_SIDE_INPUT_DIR, CLOUD_STORAGE_DATA_DIR, bucket, read_csv, write_csv, load_csv_to_bigquery, CHAMPIONS_TABLE, MATCHES_TABLE
 
 def get_match_data_by_id(id):
+    """
+    It takes a match id and returns the match data
+    
+    :param id: the match id
+    :return: A JSON object with all the data of the match
+    """
     endpoint = "/lol/match/v5/matches/{id}/".format(
         id=id)
     url = "https://{HOST}{endpoint}".format(HOST=HOST_EU, endpoint=endpoint)
@@ -30,6 +36,17 @@ def get_match_data_by_id(id):
     return data_json
 
 def filter_attributes_match_obj(match_obj, tier, champs_lookup):
+    """
+    It takes a match object, a tier, and a lookup table of champion names and returns a dictionary with
+    two keys: 'match_stats' and 'champ_list'. 
+    
+    The 'match_stats' key contains a dictionary of match statistics. The 'champ_list' key contains a
+    list of dictionaries, each of which contains information about a champion
+    
+    :param match_obj: the match object
+    :param tier: the tier of the match (e.g. 'DIAMOND')
+    :param champs_lookup: a dictionary that maps championId to championName
+    """
     
     match_stats = {}
     champ_list = []
@@ -118,6 +135,13 @@ def filter_attributes_match_obj(match_obj, tier, champs_lookup):
 
 def get_match_data(date: datetime=None, **kwargs):
 
+    """
+    It reads a list of match IDs from a CSV file, downloads the match data from the Riot API, transforms
+    the data, and writes the transformed data to a CSV file
+    
+    :param date: The date to run the pipeline for
+    :type date: datetime
+    """
     if not date:
         date = kwargs['execution_date']
 

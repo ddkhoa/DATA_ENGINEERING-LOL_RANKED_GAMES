@@ -8,6 +8,14 @@ import json
 import sys
 
 def get_matches_by_puuid(puuid, start_date, end_date):
+    """
+    It takes a puuid, start date and end date and returns a list of match ids
+    
+    :param puuid: the player's unique ID
+    :param start_date: The start date of the time frame you want to get matches from
+    :param end_date: The end date of the range of matches to retrieve
+    :return: A list of match ids
+    """
     endpoint = "/lol/match/v5/matches/by-puuid/{puuid}/ids?startTime={start_date}&endTime={end_date}&start=0&count=100".format(
         puuid=puuid, start_date=start_date, end_date=end_date)
     url = "https://{HOST}{endpoint}".format(HOST=HOST_EU, endpoint=endpoint)
@@ -30,6 +38,14 @@ def get_matches_by_puuid(puuid, start_date, end_date):
     return data_json
 
 def get_start_and_end_timestamp(date: datetime):
+    """
+    It takes a date as input and returns a dictionary with two keys: 'start' and 'end'. The values of
+    these keys are the start and end timestamps of the day
+    
+    :param date: The date for which you want to get the start and end timestamps
+    :type date: datetime
+    :return: A dictionary with two keys, start and end.
+    """
     year = date.year
     month = date.month
     day = date.day
@@ -43,6 +59,13 @@ def get_start_and_end_timestamp(date: datetime):
     return result
 
 def get_matches_id(date: datetime=None, **kwargs):
+    """
+    > Get the list of matches played by summoners in a given date range, and save the list of matches to
+    a CSV file
+    
+    :param date: datetime=None, **kwargs
+    :type date: datetime
+    """
 
     if not date:
         date = kwargs['execution_date']

@@ -15,6 +15,16 @@ summoner_fieldnames = ["leagueId", "queueType", "tier",  "rank",  "summonerId", 
                        "leaguePoints", "wins", "losses", "veteran", "inactive", "freshBlood", "hotStreak", "miniSeries"]
 
 def get_summoners_riot_api(queue, tier, division, page=1):
+    """
+    > This function takes in a queue, tier, division, and page number and returns a list of summoners in
+    that queue, tier, and division
+    
+    :param queue: RANKED_SOLO_5x5
+    :param tier: The tier of the league
+    :param division: I, II, III, IV
+    :param page: The page number of the summoners to retrieve, defaults to 1 (optional)
+    :return: A list of dictionaries. Each dictionary contains information about a summoner.
+    """
 
     endpoint = "/lol/league/v4/entries/{queue}/{tier}/{division}?page={page}".format(
         queue=queue, tier=tier, division=division, page=page)
@@ -39,6 +49,13 @@ def get_summoners_riot_api(queue, tier, division, page=1):
 
 
 def get_summoners(date: datetime=None, **kwagrs):
+    """
+    > We get a list of summoners from the Riot API, and then write them to a CSV file
+    
+    :param date: datetime=None, **kwagrs
+    :type date: datetime
+    :return: The number of summoners in the list
+    """
 
     if not date:
         date = kwagrs['execution_date']

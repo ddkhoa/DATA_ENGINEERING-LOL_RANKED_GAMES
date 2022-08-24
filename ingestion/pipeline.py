@@ -10,6 +10,12 @@ from dependencies.get_match_data import get_match_data
 
 
 def parse_string(str):
+    """
+    It takes a string in the format YYYYMMDD and returns a datetime object
+    
+    :param str: The string to parse
+    :return: A datetime object
+    """
     year = int(str[:4])
     month = int(str[4:6])
     day = int(str[6:])
@@ -17,6 +23,12 @@ def parse_string(str):
     return datetime(year, month, day)
 
 def run_pipeline(date_arg):
+    """
+    `run_pipeline` is a function that takes a date as an argument and runs the pipeline for that date
+    
+    :param date_arg: The date you want to get data for. If you don't specify a date, it will get data
+    for the previous day
+    """
 
     if date_arg:
         date = parse_string(date_arg)
@@ -54,6 +66,9 @@ def run_pipeline(date_arg):
     print('Execution time:', end_all - start_all, 'seconds')
 
 def main():
+    """
+    It takes a date argument, and if it's not provided, it uses the current date and run the pipeline
+    """
 
     parser = argparse.ArgumentParser(description='Get LOL ranked games')
     parser.add_argument("--date", type=str, required=False)

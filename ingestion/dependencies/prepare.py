@@ -4,6 +4,10 @@ import requests, json
 from dependencies.common import CLOUD_STORAGE_SIDE_INPUT_DIR, bucket
 
 def prepare():
+    """
+    It downloads the latest champion data from Riot's API, converts the champion name to champion id,
+    and uploads the result to a file in Cloud Storage
+    """
     champs_data_url="http://ddragon.leagueoflegends.com/cdn/12.10.1/data/en_US/champion.json"
     response = requests.get(champs_data_url)
     champs_data = response.json()

@@ -10,6 +10,13 @@ import sys
 
 
 def get_summoner_by_name(summoner_name):
+    """
+    > This function takes a summoner name as input, and returns the summoner's information as a JSON
+    object
+    
+    :param summoner_name: The name of the summoner you want to look up
+    :return: A dictionary with the summoner's information
+    """
     endpoint = "/lol/summoner/v4/summoners/by-name/{summoner_name}".format(
         summoner_name=summoner_name)
     url = "https://{HOST}{endpoint}".format(HOST=HOST, endpoint=endpoint)
@@ -32,6 +39,13 @@ def get_summoner_by_name(summoner_name):
     return data_json
 
 def get_summoners_puuid(date: datetime=None, **kwargs):
+    """
+    It downloads the summoners.csv file from GCS, reads it, adds a new column puuid to it,
+    uploads it back to GCS, and update the summoners cache file in GCS
+    
+    :param date: The date that the DAG is being run for
+    :type date: datetime
+    """
 
     if not date:
         date = kwargs['execution_date']
